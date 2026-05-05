@@ -5,10 +5,6 @@ on:
     branches:
       - master
   
-permissions:
-  id-token: write
-  contents: read
-
 env:
   IMAGE_NAME: coreapi
 
@@ -26,6 +22,7 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
+         auth-type: SERVICE_PRINCIPAL
          client-id: 9c1feba3-5916-49e7-85f8-ecf5d6ed4441
          tenant-id: 139e417b-5236-4c6b-8570-2c8568bb1be4
          subscription-id: ad610489-8296-47cc-8938-28d5f67f7cc9
