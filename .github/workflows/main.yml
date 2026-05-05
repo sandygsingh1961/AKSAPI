@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+  
+permissions:
+  id-token: write
+  contents: read
 
 env:
   IMAGE_NAME: coreapi
