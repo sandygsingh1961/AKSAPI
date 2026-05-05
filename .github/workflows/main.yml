@@ -22,12 +22,8 @@ jobs:
       - name: Azure Login
         uses: azure/login@v2
         with:
-         auth-type: SERVICE_PRINCIPAL
-         client-id: 9c1feba3-5916-49e7-85f8-ecf5d6ed4441
-         tenant-id: 139e417b-5236-4c6b-8570-2c8568bb1be4
-         subscription-id: ad610489-8296-47cc-8938-28d5f67f7cc9
-         client-secret: 4Pz8Q~sz1eryvZYCarkmCzcTE0xg_.fBs1MypbLV
-
+         creds: ${{ secrets.AZURE_CREDENTIALS }}
+         
       # 3. Login to Azure Container Registry
       - name: Login to ACR
         run: |
