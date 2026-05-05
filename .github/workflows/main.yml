@@ -1,54 +1,33 @@
-name: Build and Deploy to AKS
+name: Azure Login Test
 
 on:
   push:
     branches:
       - master
-  
-env:
-  IMAGE_NAME: coreapi
 
 jobs:
-  build-and-deploy:
+  login-test:
     runs-on: ubuntu-latest
 
-    steps:
+    env:
+      AZURE_HTTP_USER_AGENT: github-actions-sp-login
 
-      # 1. Checkout source code
-      - name: Checkout code
+    steps:
+      - name: Checkout
         uses: actions/checkout@v3
 
-      # 2. Login to Azure using Service Principal
-      - name: Azure Login
-        uses: azure/login@v2
+      - name: Azure Login using SP Secret
+        uses: azure/login@v1
         with:
-         creds: ${{ secrets.AZURE_CREDENTIALS }}
-         
-      # 3. Login to Azure Container Registry
-      - name: Login to ACR
-        run: |
-          az acr login --name ${{ secrets.ACR_NAME }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: false
 
-      # 4. Build Docker Image
-      - name: Build Docker Image
+      - name: Force clear any federated env
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          unset ACTIONS_ID_TOKEN_REQUEST_URL
+          unset ACTIONS_ID_TOKEN_REQUEST_TOKEN
+          unset ARM_USE_OIDC
+          unset ARM_OIDC_TOKEN
 
-      # 5. Push Docker Image to ACR
-      - name: Push Docker Image
-        run: |
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-
-      # 6. Set AKS Cluster Context
-      - name: Set AKS Context
-        run: |
-          az aks get-credentials \
-            --resource-group ${{ secrets.RESOURCE_GROUP }} \
-            --name ${{ secrets.AKS_CLUSTER_NAME }} \
-            --overwrite-existing
-
-      # 7. Deploy latest image to AKS
-      - name: Deploy to AKS
-        run: |
-          kubectl set image deployment/myapp myapp=${{ secrets.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
-          kubectl rollout status deployment/myapp
+      - name: Verify Login
+        run: az account show
