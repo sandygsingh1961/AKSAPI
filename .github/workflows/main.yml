@@ -3,10 +3,10 @@ name: Build and Deploy to AKS
 on:
   push:
     branches:
-      - main
+      - master
 
 env:
-  IMAGE_NAME: myapp
+  IMAGE_NAME: coreapi
 
 jobs:
   build-and-deploy:
